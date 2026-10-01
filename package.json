@@ -14,7 +14,8 @@
     "lint:workspace": "eslint apps/api/src packages/contracts/src packages/ui/src",
     "lint": "pnpm lint:web && pnpm lint:workspace",
     "test": "pnpm --filter web test && pnpm --filter @shopflow/api test",
-    "test:integration": "pnpm --filter @shopflow/api test:integration"
+    "test:integration": "pnpm --filter @shopflow/api test:integration",
+    "test:coverage": "pnpm --filter web test:coverage && pnpm --filter @shopflow/api test:coverage"
   },
   "keywords": [],
   "author": "",

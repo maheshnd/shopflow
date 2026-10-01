@@ -15,5 +15,30 @@ export default defineConfig({
     setupFiles: [
       "./vitest.setup.ts",
     ],
+    coverage: {
+      provider: "v8",
+
+      reporter: [
+        "text",
+        "html",
+        "lcov",
+      ],
+
+      include: [
+        "features/**/*.{ts,tsx}",
+        "lib/**/*.{ts,tsx}",
+      ],
+
+      exclude: [
+        "**/*.test.{ts,tsx}",
+        "**/*.stories.{ts,tsx}",
+      ],
+      thresholds: {
+        statements: 1,
+        branches: 3,
+        functions: 3,
+        lines: 1,
+      },
+    },
   },
 });

@@ -35,6 +35,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -56,14 +58,19 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Unit and component tests
-        run: pnpm test
+      - name: Unit tests and coverage
+        run: pnpm test:coverage
 
       - name: Run database migrations
         run: pnpm --filter @shopflow/api db:migrate
 
       - name: Integration tests
         run: pnpm test:integration
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Build
         run: pnpm build

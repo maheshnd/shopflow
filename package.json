@@ -9,11 +9,22 @@
     "build-storybook": "pnpm --filter @shopflow/ui build-storybook",
     "build:contracts": "pnpm --filter @shopflow/contracts build",
     "build": "pnpm build:contracts && pnpm --filter @shopflow/api build && pnpm --filter web build",
-    "typecheck": "pnpm build:contracts && pnpm --filter @shopflow/ui typecheck && pnpm --filter @shopflow/api typecheck && pnpm --filter web typecheck"
+    "typecheck": "pnpm build:contracts && pnpm --filter @shopflow/ui typecheck && pnpm --filter @shopflow/api typecheck && pnpm --filter web typecheck",
+    "lint:web": "pnpm --filter web lint",
+    "lint:workspace": "eslint apps/api/src packages/contracts/src packages/ui/src",
+    "lint": "pnpm lint:web && pnpm lint:workspace"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.33.2",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "9.39.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.0"
+  }
 }

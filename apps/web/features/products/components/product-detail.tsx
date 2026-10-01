@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import Link from "next/link";
 
 import {
@@ -59,9 +59,9 @@ export function ProductDetail({
   if (productQuery.isError) {
     const isNotFound =
       productQuery.error instanceof
-        ApiError &&
+      ApiError &&
       productQuery.error.code ===
-        "PRODUCT_NOT_FOUND";
+      "PRODUCT_NOT_FOUND";
 
     return (
       <div className={error}>
@@ -106,9 +106,11 @@ export function ProductDetail({
         <div className={detailContent}>
           <div className={detailImage}>
             {product?.imageUrl ? (
-              <img
+              <Image
                 src={product.imageUrl}
                 alt={product.name}
+                width={600}
+                height={600}
               />
             ) : (
               <span>

@@ -12,7 +12,9 @@
     "typecheck": "pnpm build:contracts && pnpm --filter @shopflow/ui typecheck && pnpm --filter @shopflow/api typecheck && pnpm --filter web typecheck",
     "lint:web": "pnpm --filter web lint",
     "lint:workspace": "eslint apps/api/src packages/contracts/src packages/ui/src",
-    "lint": "pnpm lint:web && pnpm lint:workspace"
+    "lint": "pnpm lint:web && pnpm lint:workspace",
+    "test": "pnpm --filter web test && pnpm --filter @shopflow/api test",
+    "test:integration": "pnpm --filter @shopflow/api test:integration"
   },
   "keywords": [],
   "author": "",

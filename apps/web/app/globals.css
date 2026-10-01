@@ -1,0 +1,6 @@
+/*
+ * Tailwind is still installed but no longer used by migrated components.
+ * Base styles (body, fonts, colors) now come from @shopflow/ui
+ * (themeClass + global styles). Remove this file with Tailwind later.
+ */
+@import "tailwindcss";

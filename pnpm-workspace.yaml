@@ -1,0 +1,15 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Build-script policy for the whole workspace.
+# (Previously lived in a nested apps/web/pnpm-workspace.yaml, which made
+# apps/web look like its own workspace root and broke workspace linking.)
+onlyBuiltDependencies:
+  - esbuild
+
+ignoredBuiltDependencies:
+  - "@swc/core"
+  - bcrypt
+  - sharp
+  - unrs-resolver

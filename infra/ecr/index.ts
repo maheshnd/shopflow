@@ -21,7 +21,8 @@ export function createEcr() {
   });
 
   return {
-    apiRepository,
-    apiRepositoryUrl: apiRepository.repositoryUrl,
+   apiRepository,
+  apiRepositoryArn: apiRepository.arn,
+  apiRepositoryUrl: apiRepository.repositoryUrl,
   };
 }

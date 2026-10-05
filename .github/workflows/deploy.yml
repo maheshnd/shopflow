@@ -1,47 +1,49 @@
 name: Deploy
 
 on:
-    workflow_dispatch:
-        inputs:
-            component:
-                description: "Component to deploy"
-                required: true
-                type: choice
-                options:
-                    - api
-                    - web
-                    - both
+  workflow_dispatch:
+    inputs:
+      component:
+        description: "Component to deploy"
+        required: true
+        type: choice
+        options:
+          - api
+          - web
+          - both
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
-    deploy-api:
-        if: >
-            inputs.component == 'api' ||
-            inputs.component == 'both'
+  deploy-api:
+    if: >
+      inputs.component == 'api' ||
+      inputs.component == 'both'
 
-        runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Build API Docker image
-              run: |
-                  docker build \
-                    -f apps/api/Dockerfile \
-                    -t shopflow-api:${{ github.sha }} \
-                    .
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
 
-    deploy-web:
-        if: >
-            inputs.component == 'web' ||
-            inputs.component == 'both'
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
 
-        runs-on: ubuntu-latest
+  deploy-web:
+    if: >
+      inputs.component == 'web' ||
+      inputs.component == 'both'
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    runs-on: ubuntu-latest
 
-            - name: Web deployment placeholder
-              run: |
-                  echo "Web deployment will be added after runtime API configuration is finalized."
+    steps:
+      - name: Web deployment placeholder
+        run: echo "Web deployment will be added later."

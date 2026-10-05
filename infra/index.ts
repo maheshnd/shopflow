@@ -1,6 +1,20 @@
-import * as aws from "@pulumi/aws";
 import { createEcr } from "./ecr";
+import {
+  createGitHubDeployRole,
+  createGitHubOidcProvider,
+} from "./iam";
 
 const ecr = createEcr();
 
-export const apiRepositoryUrl = ecr.apiRepositoryUrl;
+const githubOidc = createGitHubOidcProvider();
+
+const githubDeploy = createGitHubDeployRole({
+  oidcProviderArn: githubOidc.providerArn,
+  apiRepositoryArn: ecr.apiRepositoryArn,
+});
+
+export const apiRepositoryUrl =
+  ecr.apiRepositoryUrl;
+
+export const githubDeployRoleArn =
+  githubDeploy.deployRoleArn;

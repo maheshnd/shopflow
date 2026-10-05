@@ -1,6 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+  - "infra"
 
 # Build-script policy for the whole workspace.
 # (Previously lived in a nested apps/web/pnpm-workspace.yaml, which made

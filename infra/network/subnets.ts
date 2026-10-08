@@ -22,6 +22,7 @@ export function createSubnets({
         ...commonTags,
         Name: "shopflow-public-a",
         Type: "public",
+        "kubernetes.io/role/elb": "1",
       },
     },
   );
@@ -39,6 +40,7 @@ export function createSubnets({
         ...commonTags,
         Name: "shopflow-public-b",
         Type: "public",
+        "kubernetes.io/role/elb": "1",
       },
     },
   );
@@ -56,6 +58,7 @@ export function createSubnets({
         ...commonTags,
         Name: "shopflow-private-a",
         Type: "private",
+        "kubernetes.io/role/internal-elb": "1",
       },
     },
   );
@@ -73,6 +76,7 @@ export function createSubnets({
         ...commonTags,
         Name: "shopflow-private-b",
         Type: "private",
+        "kubernetes.io/role/internal-elb": "1",
       },
     },
   );

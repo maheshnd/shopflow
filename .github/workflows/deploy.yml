@@ -123,8 +123,9 @@ jobs:
         run: |
            kubectl apply \
             -f k8s/api/service.yaml
-           
-    
+
+      - name: Deploy API ingress
+        run: kubectl apply -f k8s/api/ingress.yaml
 
   deploy-web:
     if: >

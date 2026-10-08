@@ -2,6 +2,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as eks from "@pulumi/eks";
 import { commonTags } from "../tags";
+import { createLoadBalancerControllerIam } from "./load-balancer-controller-iam";
+import { createLoadBalancerController } from "./load-balancer-controller";
 
 type CreateEksArgs = {
   vpcId: pulumi.Input<string>;
@@ -38,6 +40,12 @@ export function createEks({
       Name: "shopflow-eks",
     },
   });
+
+  const loadBalancerControllerIam =
+    createLoadBalancerControllerIam({
+      oidcProviderArn: cluster.oidcProviderArn,
+      oidcProviderUrl: cluster.oidcProviderUrl,
+    });
 
   // 2. IAM role assumed by EC2 worker nodes
   const nodeRole = new aws.iam.Role("shopflow-eks-node-role", {
@@ -120,6 +128,18 @@ export function createEks({
     },
   );
 
+  const loadBalancerController =
+    createLoadBalancerController({
+      kubeconfig: cluster.kubeconfigJson,
+      clusterName: cluster.eksCluster.name,
+      vpcId,
+      roleArn: loadBalancerControllerIam.roleArn,
+      dependsOn: [
+        loadBalancerControllerIam.controllerPolicyAttachment,
+        nodeGroup,
+      ],
+    });
+
   // 4. Allow GitHub Actions to access this EKS cluster
   const githubAccessEntry = new aws.eks.AccessEntry(
     "shopflow-github-eks-access",
@@ -161,5 +181,14 @@ export function createEks({
     kubeconfig: cluster.kubeconfigJson,
 
     nodeSecurityGroupId: cluster.nodeSecurityGroupId,
+
+    oidcProviderArn: cluster.oidcProviderArn,
+    oidcProviderUrl: cluster.oidcProviderUrl,
+
+    loadBalancerControllerRoleArn:
+      loadBalancerControllerIam.roleArn,
+
+    loadBalancerController
   };
 }
+

@@ -1,2 +1,4 @@
 config:
   aws:region: us-east-1
+  shopflow-infra:dbPassword:
+    secure: AAABACBhg4Gw406ILGFx1vNJR5PcAu0vsMy2bB2zXtCX6fUhjwW3MjYMYnkxco0UXUNIPgDEh8JCO5hPoA8a5JQNMMaFIBHKU3CaaNe+dtc=

@@ -99,9 +99,35 @@ export function createGitHubDeployRole({
     },
   );
 
+  const eksDescribePolicy = new aws.iam.RolePolicy(
+    "shopflow-github-eks-describe-policy",
+    {
+      role: deployRole.id,
+
+      policy: pulumi.jsonStringify({
+        Version: "2012-10-17",
+
+        Statement: [
+          {
+            Sid: "DescribeEksCluster",
+
+            Effect: "Allow",
+
+            Action: [
+              "eks:DescribeCluster",
+            ],
+
+            Resource: "*",
+          },
+        ],
+      }),
+    },
+  );
+
   return {
     deployRole,
     deployRoleArn: deployRole.arn,
     ecrPolicy,
+    eksDescribePolicy,
   };
 }

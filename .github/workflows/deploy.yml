@@ -31,6 +31,7 @@ jobs:
     env:
         AWS_REGION: us-east-1
         ECR_REPOSITORY: shopflow-api
+        EKS_CLUSTER_NAME: shopflow-eks-eksCluster-f5d0ea6
 
     steps:
       - name: Checkout repository
@@ -49,23 +50,80 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push API image
+      - name: Build and push API and migration images
         env:
             ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
             IMAGE_TAG: ${{ github.sha }}
         run: |
-            IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+            API_IMAGE="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+            MIGRATION_IMAGE="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-migrate"
 
-            echo "Building $IMAGE_URI"
+            echo "Building API image: $API_IMAGE"
 
             docker build \
+                --platform linux/amd64 \
+                --target runtime \
                 -f apps/api/Dockerfile \
-                -t "$IMAGE_URI" \
+                -t "$API_IMAGE" \
                 .
 
-            docker push "$IMAGE_URI"
+            docker push "$API_IMAGE"
 
-            echo "Published image: $IMAGE_URI"
+            echo "Building migration image: $MIGRATION_IMAGE"
+
+            docker build \
+                --platform linux/amd64 \
+                --target migration \
+                -f apps/api/Dockerfile \
+                 -t "$MIGRATION_IMAGE" \
+                .
+            
+            docker push "$MIGRATION_IMAGE"
+
+            echo "Published API image: $API_IMAGE"
+            echo "Published migration image: $MIGRATION_IMAGE"
+
+            echo "API_IMAGE=$API_IMAGE" >> "$GITHUB_ENV"
+            echo "MIGRATION_IMAGE=$MIGRATION_IMAGE" >> "$GITHUB_ENV"
+        
+      - name: Configure kubectl for EKS
+        run: |
+            aws eks update-kubeconfig \
+                --region "$AWS_REGION" \
+                --name "$EKS_CLUSTER_NAME"
+
+      - name: Run database migration
+        run: |
+           kubectl delete job shopflow-db-migrate \
+            -n shopflow \
+            --ignore-not-found
+
+           sed "s|MIGRATION_IMAGE|$MIGRATION_IMAGE|g" \
+            k8s/api/migration-job.yaml \
+           | kubectl apply -f -
+
+            kubectl wait \
+              --for=condition=complete \
+              job/shopflow-db-migrate \
+              -n shopflow \
+              --timeout=300s
+      
+      - name: Deploy API to EKS
+        run: |
+           sed "s|API_IMAGE|$API_IMAGE|g" \
+            k8s/api/deployment.yaml \
+           | kubectl apply -f -
+
+            kubectl rollout status \
+              deployment/shopflow-api \
+              -n shopflow \
+              --timeout=120s
+
+      - name: Deploy API service
+        run: |
+           kubectl apply \
+            -f k8s/api/service.yaml
+           
     
 
   deploy-web:

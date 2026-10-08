@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: shopflow-api
+  namespace: shopflow
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: shopflow-api
+
+  template:
+    metadata:
+      labels:
+        app: shopflow-api
+
+    spec:
+      containers:
+        - name: api
+
+          # We will replace this with the real
+          # ECR image URI + Git SHA.
+          image: API_IMAGE
+
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 4000
+
+          env:
+            - name: NODE_ENV
+              value: production
+
+            - name: PORT
+              value: "4000"
+
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shopflow-api-secrets
+                  key: DATABASE_URL

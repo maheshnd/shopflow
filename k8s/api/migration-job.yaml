@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: shopflow-db-migrate
+  namespace: shopflow
+
+spec:
+  backoffLimit: 1
+
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: migrate
+
+          image: MIGRATION_IMAGE
+
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shopflow-api-secrets
+                  key: DATABASE_URL
